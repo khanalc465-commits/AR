@@ -1,26 +1,131 @@
 
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Cube</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <title>Magic AR Cube</title>
+
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #info {
+      position: fixed;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 12px cyan;
+      z-index: 10;
+      pointer-events: none;
+    }
+  </style>
 </head>
 
 <body>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <a-marker preset="hiro">
-            <a-box
-                position="0 0.5 0"
-                color="skyblue"
-                material="opacity: 0.8">
-            </a-box>
-        </a-marker>
+  <div id="info">✨ MAGIC AR CUBE ✨</div>
 
-        <a-entity camera></a-entity>
-    </a-scene>
+  <a-scene
+    embedded
+    renderer="colorManagement: true; antialias: true"
+    arjs="sourceType: webcam; debugUIEnabled: false;">
+
+    <a-marker preset="Hero">
+
+      <a-entity id="magicCube"
+        position="0 0.8 0"
+        animation="
+          property: rotation;
+          to: 360 360 360;
+          dur: 5000;
+          easing: linear;
+          loop: true">
+
+        <a-box
+          id="cube"
+          position="0 0 0"
+          color="#00FFFF"
+          material="
+            shader: standard;
+            emissive: #00FFFF;
+            emissiveIntensity: 0.8;
+            metalness: 0.5;
+            roughness: 0.2;
+            opacity: 0.9;
+            transparent: true"
+          animation="
+            property: scale;
+            from: 1 1 1;
+            to: 1.2 1.2 1.2;
+            dir: alternate;
+            dur: 1000;
+            easing: easeInOutSine;
+            loop: true">
+        </a-box>
+
+        <a-torus
+          position="0 0 0"
+          radius="0.85"
+          radius-tubular="0.015"
+          color="#FF00FF"
+          material="emissive: #FF00FF; emissiveIntensity: 1"
+          rotation="90 0 0">
+        </a-torus>
+
+        <a-sphere
+          position="0 1.1 0"
+          radius="0.12"
+          color="#FFFF00"
+          material="emissive: #FFFF00; emissiveIntensity: 1"
+          animation="
+            property: position;
+            to: 0 1.4 0;
+            dir: alternate;
+            dur: 800;
+            easing: easeInOutSine;
+            loop: true">
+        </a-sphere>
+
+      </a-entity>
+
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    const colors = [
+      "#00FFFF",
+      "#FF00FF",
+      "#FFFF00",
+      "#00FF66",
+      "#FF5500",
+      "#FFFFFF"
+    ];
+
+    let colorIndex = 0;
+
+    document.querySelector("#cube")
+      .addEventListener("click", function () {
+        colorIndex = (colorIndex + 1) % colors.length;
+
+        const color = colors[colorIndex];
+
+        this.setAttribute("color", color);
+        this.setAttribute("material", "emissive", color);
+      });
+  </script>
 </body>
 </html>
