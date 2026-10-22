@@ -48,23 +48,30 @@
       <button id="reverseButton">逆回転</button>
     </div>
  
-    <a-scene embedded arjs="sourceType: webcam">
-      <a-marker preset="hiro" smooth="true">
-        <a-entity id="model" position="0 0 0.5">
-          <a-gltf-model
-            id="robot"
-            src="robot.glb"
-            position="0 0 0"
-            scale="0.3 0.3 0.3"
-            rotation="-90 0 0"
-            animation-mixer="clip: RobotArmature|Robot_Walking"
-          >
-          </a-gltf-model>
-        </a-entity>
-      </a-marker>
- 
-      <a-entity camera></a-entity>
-    </a-scene>
+    ```html
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true"
+  arjs="sourceType: webcam; debugUIEnabled: true;">
+
+  <a-marker
+    preset="hiro"
+    smooth="true">
+
+    <!-- Test marker detection first -->
+    <a-box
+      position="0 0.5 0"
+      material="color: red;">
+    </a-box>
+
+  </a-marker>
+
+  <a-entity camera></a-entity>
+
+</a-scene>
+```
+
  
     <script>
       const robot = document.getElementById("robot");
