@@ -49,19 +49,20 @@
     </div>
  
     <a-scene embedded arjs="sourceType: webcam">
-      <a-marker preset="hiro" smooth="true">
-        <a-entity id="model" position="0 0 0.5">
-          <a-gltf-model
-            id="robot"
-            src="robot.glb"
-            position="0 0 0"
-            scale="0.3 0.3 0.3"
-            rotation="-90 0 0"
-            animation-mixer="clip: RobotArmature|Robot_Walking"
-          >
-          </a-gltf-model>
-        </a-entity>
-      </a-marker>
+      ```html
+<a-marker preset="hiro" smooth="true">
+
+  <a-gltf-model
+    id="robot"
+    src="./robot.glb"
+    position="0 0 0"
+    scale="0.3 0.3 0.3"
+    rotation="0 0 0">
+  </a-gltf-model>
+
+</a-marker>
+```
+
  
       <a-entity camera></a-entity>
     </a-scene>
