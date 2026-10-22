@@ -1,159 +1,82 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Robot Controller</title>
 
-  <!-- A-Frame and AR.js -->
+  <title>AR Robot Animation</title>
+
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: sans-serif;
-    }
-
-    #hud {
+    #hub {
       position: fixed;
       top: 20px;
       left: 20px;
-      right: 20px;
       z-index: 999;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
     }
 
-    button,
     select {
-      font-size: 16px;
-      padding: 10px 14px;
+      font-size: 20px;
+      padding: 12px 20px;
       border: none;
-      border-radius: 8px;
+      background-color: royalblue;
+      color: white;
+      border-radius: 10px;
       cursor: pointer;
     }
 
-    button {
-      background-color: royalblue;
-      color: white;
-    }
-
-    button:active {
-      background-color: navy;
-    }
-
-    select {
+    select option {
       background-color: white;
-      color: #222;
+      color: black;
     }
   </style>
 </head>
 
 <body>
-  <!-- Robot controls -->
-  <div id="hud">
-    <select id="animationSelect" aria-label="アニメーション選択">
-      <option value="RobotArmature|Robot_Walking">あるく</option>
+
+  <div id="hub">
+    <select id="animationSelect">
+      <option value="RobotArmature|Robot_Walking">ある</option>
       <option value="RobotArmature|Robot_Dance">おどる</option>
+      <option value="RobotArmature|Robot_Death">死ぬ</option>
+      <option value="RobotArmature|Robot_Jump">ジャンプ</option>
       <option value="RobotArmature|Robot_Punch">パンチ</option>
     </select>
-
-    <button id="enlargeButton">拡大</button>
-    <button id="shrinkButton">縮小</button>
-    <button id="rotateButton">回転</button>
-    <button id="reverseButton">逆回転</button>
   </div>
 
-  <!-- AR scene -->
-  <a-scene
-    embedded
-    vr-mode-ui="enabled: false"
-    arjs="sourceType: webcam; debugUIEnabled: false"
-    renderer="colorManagement: true; antialias: true"
-  >
+  <a-scene embedded arjs="sourceType: webcam">
+
     <a-marker preset="hiro" smooth="true">
-      <a-entity
+
+      <a-gltf-model
         id="robot"
-        gltf-model="./Robot.glb"
-        position="0 0 0"
+        src="./Robot.glb"
+        position="0 0 0.5"
         scale="0.3 0.3 0.3"
-        rotation="0 0 0"
-        animation-mixer="clip: RobotArmature|Robot_Walking"
-      ></a-entity>
+        rotation="-90 0 0"
+        animation-mixer="clip: RobotArmature|Robot_Dance">
+      </a-gltf-model>
+
     </a-marker>
 
     <a-entity camera></a-entity>
+
   </a-scene>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const robot = document.getElementById("robot");
-      const animationSelect =
-        document.getElementById("animationSelect");
+    const robot = document.getElementById("robot");
+    const animationSelect = document.getElementById("animationSelect");
 
-      const enlargeButton =
-        document.getElementById("enlargeButton");
-      const shrinkButton =
-        document.getElementById("shrinkButton");
-      const rotateButton =
-        document.getElementById("rotateButton");
-      const reverseButton =
-        document.getElementById("reverseButton");
+    function changeAnimation(){
+        robot.setAttribute("animation-mixer","clip",animationSelect.value);
+    }
+    animationSelect.addEventListener("change",changeAnimation);
 
-      // Initial values
-      let size = 0.3;
-      let angle = 0;
-
-      const SCALE_STEP = 0.1;
-      const MIN_SCALE = 0.1;
-      const MAX_SCALE = 2;
-      const ROTATION_STEP = 15;
-
-      // Apply the current scale
-      function updateScale() {
-        robot.setAttribute(
-          "scale",
-          `${size} ${size} ${size}`
-        );
-      }
-
-      // Enlarge the robot
-      enlargeButton.addEventListener("click", () => {
-        size = Math.min(size + SCALE_STEP, MAX_SCALE);
-        updateScale();
-      });
-
-      // Shrink the robot
-      shrinkButton.addEventListener("click", () => {
-        size = Math.max(size - SCALE_STEP, MIN_SCALE);
-        updateScale();
-      });
-
-      // Rotate the robot
-      rotateButton.addEventListener("click", () => {
-        angle += ROTATION_STEP;
-        robot.setAttribute("rotation", `0 ${angle} 0`);
-      });
-
-      // Rotate in the opposite direction
-      reverseButton.addEventListener("click", () => {
-        angle -= ROTATION_STEP;
-        robot.setAttribute("rotation", `0 ${angle} 0`);
-      });
-
-      // Change the robot animation
-      animationSelect.addEventListener("change", () => {
-        robot.setAttribute("animation-mixer", {
-          clip: animationSelect.value
-        });
-      });
-    });
   </script>
+
 </body>
 </html>
