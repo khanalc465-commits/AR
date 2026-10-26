@@ -4,22 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AR Woman Animation</title>
-
-    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
-    <!-- AR.js -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
-
-    <!-- Animation Mixer -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
-
     <style>
       body {
         margin: 0;
         overflow: hidden;
       }
-
       #hud {
         position: fixed;
         top: 20px;
@@ -31,7 +23,6 @@
         gap: 8px;
         max-width: calc(100vw - 40px);
       }
-
       button {
         font-size: 16px;
         padding: 10px 14px;
@@ -41,11 +32,9 @@
         border-radius: 8px;
         cursor: pointer;
       }
-
       button:active {
         background-color: navy;
       }
-
       select {
         font-size: 16px;
         padding: 10px;
@@ -56,9 +45,7 @@
       }
     </style>
   </head>
-
   <body>
-    <!-- Control Panel -->
     <div id="hud">
       <select id="animationSelect">
         <option value="Armature|Idle">待機 (Idle)</option>
@@ -72,7 +59,6 @@
         <option value="Armature|SitIdle">座って待機 (SitIdle)</option>
         <option value="Armature|Death">倒れる (Death)</option>
       </select>
-
       <button id="enlargeButton">拡大</button>
       <button id="shrinkButton">縮小</button>
       <button id="rotateButton">回転</button>
@@ -91,12 +77,7 @@
         smoothTolerance="0.01"
         smoothThreshold="2"
       >
-        <a-entity
-          id="model"
-          position="0 0 0.5"
-          rotation="0 0 0"
-          scale="1 1 1"
-        >
+        <a-entity id="model" position="0 0 0.5" rotation="0 0 0" scale="1 1 1">
           <a-gltf-model
             id="Women"
             src="Woman.glb"
@@ -128,20 +109,22 @@
         model.setAttribute("scale", `${size} ${size} ${size}`);
       }
       shrinkButton.addEventListener("click", shrinkModel);
-      let angle = 0;
-      function rotateModel() {
-        angle += 15;
-        model.setAttribute("rotation", `0 ${angle} 0`);
-      }
+      
+let angle = 0;
 
-      rotateButton.addEventListener("click", rotateModel);
+function rotateModel() {
+  angle += 15;
+  model.setAttribute("rotation", `0 0 ${angle}`);
+}
 
-      function reverseModel() {
-        angle -= 15;
-        model.setAttribute("rotation", `0 ${angle} 0`);
-      }
+rotateButton.addEventListener("click", rotateModel);
 
-      reverseButton.addEventListener("click", reverseModel);
+function reverseModel() {
+  angle -= 15;
+  model.setAttribute("rotation", `0 0 ${angle}`);
+}
+
+reverseButton.addEventListener("click", reverseModel);
       const oneTimeAnimations = [
         "Armature|Death",
         "Armature|Jump",
