@@ -1,0 +1,237 @@
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR Robot Fighting Game</title>
+
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+
+    <style>
+      #robotHud {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 999;
+        color: red;
+      }
+
+      #myHud {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 999;
+        color: blue;
+      }
+
+      progress {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 150px;
+        height: 12px;
+        border: none;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      progress::-webkit-progress-bar {
+        background-color: #ddd;
+        border-radius: 6px;
+      }
+
+      progress::-webkit-progress-value {
+        background-color: var(--hp-color, green);
+        border-radius: 6px;
+      }
+
+      progress::-moz-progress-bar {
+        background-color: var(--hp-color, green);
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Robot HP: top right -->
+    <div id="robotHud">
+      <p>
+        ROBOT HP: <span id="robotHpText">50</span>
+      </p>
+      <progress id="robotHpBar" max="50" value="50"></progress>
+    </div>
+
+    <!-- Player HP: top left -->
+    <div id="myHud">
+      <p>
+        自分のHP: <span id="myHpText">50</span>
+      </p>
+      <progress id="myHpBar" max="50" value="50"></progress>
+    </div>
+
+    <a-scene
+      embedded
+      arjs="sourceType: webcam"
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable"
+    >
+      <a-marker preset="hiro" smooth="true">
+        <a-entity id="model" position="0 0 0.5">
+          <a-gltf-model
+            id="robot"
+            class="clickable"
+            src="robot.glb"
+            position="0 0 0.5"
+            scale="0.3 0.3 0.3"
+            rotation="-90 0 0"
+            animation-mixer="clip: RobotArmature|Robot_Idle"
+          ></a-gltf-model>
+        </a-entity>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      const robot = document.getElementById("robot");
+
+      const robotHpText = document.getElementById("robotHpText");
+      const robotHpBar = document.getElementById("robotHpBar");
+
+      const myHpText = document.getElementById("myHpText");
+      const myHpBar = document.getElementById("myHpBar");
+
+      let robotHp = 50;
+      let myHp = 50;
+
+      const hitSound = new Audio("hit.mp3");
+      const missSound = new Audio("miss.mp3");
+      const deathSound = new Audio("death.mp3");
+      const enemySound = new Audio("enemy-attack.mp3");
+
+      // Change HP bar color based on remaining HP
+      function updateHpColor(hp, bar) {
+        if (hp > 30) {
+          bar.style.setProperty("--hp-color", "green");
+        } else if (hp > 15) {
+          bar.style.setProperty("--hp-color", "blue");
+        } else {
+          bar.style.setProperty("--hp-color", "red");
+        }
+      }
+
+      // Update both HP displays
+      function updateHpDisplay() {
+        robotHpText.textContent = robotHp;
+        robotHpBar.value = robotHp;
+
+        myHpText.textContent = myHp;
+        myHpBar.value = myHp;
+
+        updateHpColor(robotHp, robotHpBar);
+        updateHpColor(myHp, myHpBar);
+      }
+
+      // Player attacks the robot
+      function attack() {
+        if (robotHp === 0 || myHp === 0) {
+          return;
+        }
+
+        // 30% chance to miss
+        if (Math.random() < 0.3) {
+          missSound.currentTime = 0;
+          missSound.play();
+          return;
+        }
+
+        // Deal 1-10 damage
+        const damage = Math.floor(Math.random() * 10) + 1;
+        robotHp = Math.max(0, robotHp - damage);
+
+        updateHpDisplay();
+
+        if (robotHp === 0) {
+          deathAnimation();
+        } else {
+          hitAnimation();
+        }
+      }
+
+      // Robot attacks the player
+      function enemyAttack() {
+        if (robotHp === 0 || myHp === 0) {
+          return;
+        }
+
+        // Deal 1-10 damage
+        const damage = Math.floor(Math.random() * 10) + 1;
+        myHp = Math.max(0, myHp - damage);
+
+        updateHpDisplay();
+
+        if (myHp > 0) {
+          enemyAnimation();
+        }
+      }
+
+      // Robot punch animation
+      function enemyAnimation() {
+        robot.removeAttribute("animation-mixer");
+
+        robot.setAttribute("animation-mixer", {
+          clip: "RobotArmature|Robot_Punch",
+          loop: "once"
+        });
+
+        enemySound.currentTime = 0;
+        enemySound.play();
+      }
+
+      // Player hits robot: jump animation
+      function hitAnimation() {
+        robot.removeAttribute("animation-mixer");
+
+        robot.setAttribute("animation-mixer", {
+          clip: "RobotArmature|Robot_Jump",
+          loop: "once"
+        });
+
+        hitSound.currentTime = 0;
+        hitSound.play();
+      }
+
+      // Robot death animation
+      function deathAnimation() {
+        robot.removeAttribute("animation-mixer");
+
+        robot.setAttribute("animation-mixer", {
+          clip: "RobotArmature|Robot_Death",
+          loop: "once",
+          clampWhenFinished: true
+        });
+
+        deathSound.currentTime = 0;
+        deathSound.play();
+      }
+
+      // Robot counterattacks after the jump animation finishes
+      robot.addEventListener("animation-finished", function (event) {
+        if (
+          event.detail.action.getClip().name ===
+          "RobotArmature|Robot_Jump"
+        ) {
+          enemyAttack();
+        }
+      });
+
+      // Click the robot to attack
+      robot.addEventListener("click", attack);
+
+      // Initialize both HP bars as green
+      updateHpDisplay();
+    </script>
+  </body>
+</html>
