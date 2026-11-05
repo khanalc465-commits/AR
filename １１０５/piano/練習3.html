@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR Touch Piano</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/projapayuri/aframe-gesture-hands@v0.9.2/aframe-gesture-hands.js"></script>
+  </head>
+
+  <body>
+    <a-scene id="scene" hands>
+      <a-plane
+        id="do"
+        color="#E74C3C"
+        width="0.4"
+        height="1.8"
+        position="-1.5 0.5 -2"
+      ></a-plane>
+      <a-plane
+        id="re"
+        color="#E67E22"
+        width="0.4"
+        height="1.8"
+        position="-1 0.5 -2"
+      ></a-plane>
+      <a-plane
+        id="mi"
+        color="#F1C40F"
+        width="0.4"
+        height="1.8"
+        position="-0.5 0.5 -2"
+      ></a-plane>
+      <a-plane
+        id="fa"
+        color="#27AE60"
+        width="0.4"
+        height="1.8"
+        position="0 0.5 -2"
+      ></a-plane>
+      <a-plane
+        id="so"
+        color="#3498DB"
+        width="0.4"
+        height="1.8"
+        position="0.5 0.5 -2"
+      ></a-plane>
+      <a-plane
+        id="ra"
+        color="#5865C7"
+        width="0.4"
+        height="1.8"
+        position="1 0.5 -2"
+      ></a-plane>
+      <a-plane
+        id="si"
+        color="#9B59B6"
+        width="0.4"
+        height="1.8"
+        position="1.5 0.5 -2"
+      ></a-plane>
+      <a-camera position="0 0 0"></a-camera>
+    </a-scene>
+
+    <script>
+      const scene = document.getElementById("scene");
+
+      const keys = [
+        document.getElementById("do"),
+        document.getElementById("re"),
+        document.getElementById("mi"),
+        document.getElementById("fa"),
+        document.getElementById("so"),
+        document.getElementById("ra"),
+        document.getElementById("si"),
+      ];
+
+      const sounds = [
+        new Audio("1-1do.mp3"),
+        new Audio("1-2re.mp3"),
+        new Audio("1-3mi.mp3"),
+        new Audio("1-4fa.mp3"),
+        new Audio("1-5so.mp3"),
+        new Audio("1-6ra.mp3"),
+        new Audio("1_7si.mp3"),
+      ];
+
+      let wasInside = [false, false, false, false, false, false, false];
+
+      function playPiano() {
+        const hands = scene.components.hands;
+
+        if (!hands) return;
+
+        for (let i = 0; i < keys.length; i++) {
+          const inside = hands.isPointOnEntity(8, keys[i]);
+
+          if (inside && !wasInside[i]) {
+            sounds[i].currentTime = 0;
+            sounds[i].play();
+          }
+
+          wasInside[i] = inside;
+        }
+      }
+
+      scene.addEventListener("hand-result", playPiano);
+    </script>
+  </body>
+</html>

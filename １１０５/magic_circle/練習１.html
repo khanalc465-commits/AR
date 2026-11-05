@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/projapayuri/aframe-gesture-hands@v0.9.2/aframe-gesture-hands.js"></script>
+  </head>
+  <body>
+    <a-scene hands id="scene">
+      <a-gltf-model
+        id="model"
+        src="c_cyan.glb"
+        animation-mixer="clip: MagicCircle_Loop"
+        position="0 0.4 -3"
+        scale="2 2 2"
+      ></a-gltf-model>
+
+      <!-- Top Left -->
+      <a-plane
+        id="gold-panel"
+        color="gold"
+        opacity="0.8"
+        width="0.9"
+        height="0.35"
+        rotation="-10 0 0"
+        position="-1.2 0.8 -2"
+      ></a-plane>
+
+      <!-- Top Right -->
+      <a-plane
+        id="cyan-panel"
+        color="cyan"
+        opacity="0.8"
+        width="0.9"
+        height="0.35"
+        rotation="-10 0 0"
+        position="1.2 0.8 -2"
+      ></a-plane>
+
+      <!-- Bottom Left -->
+      <a-plane
+        id="rose-panel"
+        color="pink"
+        opacity="0.8"
+        width="0.9"
+        height="0.35"
+        rotation="-10 0 0"
+        position="-1.2 -0.8 -2"
+      ></a-plane>
+
+      <!-- Bottom Right -->
+      <a-plane
+        id="violet-panel"
+        color="violet"
+        opacity="0.8"
+        width="0.9"
+        height="0.35"
+        rotation="-10 0 0"
+        position="1.2 -0.8 -2"
+      ></a-plane>
+      <a-camera position="0 0 0"></a-camera>
+    </a-scene>
+
+    <script>
+      const scene = document.getElementById("scene");
+      const model = document.getElementById("model");
+
+      const goldPanel = document.getElementById("gold-panel");
+      const cyanPanel = document.getElementById("cyan-panel");
+      const rosePanel = document.getElementById("rose-panel");
+      const violetPanel = document.getElementById("violet-panel");
+
+      const circleSound = new Audio("circle.mp3");
+
+      const models = ["c_gold.glb", "c_cyan.glb", "c_rose.glb", "c_violet.glb"];
+
+      const panels = [goldPanel, cyanPanel, rosePanel, violetPanel];
+
+      let index = 0;
+      let wasInside = false;
+
+      function changeColor() {
+        let inside = false;
+
+        for (let i = 0; i < panels.length; i++) {
+          if (scene.components.hands.isPointOnEntity(8, panels[i])) {
+            index = i;
+            inside = true;
+            break;
+          }
+        }
+
+        if (inside && !wasInside) {
+          model.setAttribute("src", models[index]);
+
+          circleSound.currentTime = 0;
+          circleSound.play();
+        }
+
+        wasInside = inside;
+      }
+
+      scene.addEventListener("hand-result", changeColor);
+    </script>
+  </body>
+</html>
