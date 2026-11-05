@@ -15,52 +15,67 @@
       <a-plane
         id="do"
         color="#E74C3C"
-        width="0.4"
+        width="0.35"
         height="1.8"
-        position="-1.5 0.5 -2"
+        position="-1.4 0.5 -2"
       ></a-plane>
+
       <a-plane
         id="re"
         color="#E67E22"
-        width="0.4"
+        width="0.35"
         height="1.8"
         position="-1 0.5 -2"
       ></a-plane>
+
       <a-plane
         id="mi"
         color="#F1C40F"
-        width="0.4"
+        width="0.35"
         height="1.8"
-        position="-0.5 0.5 -2"
+        position="-0.6 0.5 -2"
       ></a-plane>
+
       <a-plane
         id="fa"
         color="#27AE60"
-        width="0.4"
+        width="0.35"
         height="1.8"
-        position="0 0.5 -2"
+        position="-0.2 0.5 -2"
       ></a-plane>
+
       <a-plane
         id="so"
         color="#3498DB"
-        width="0.4"
+        width="0.35"
         height="1.8"
-        position="0.5 0.5 -2"
+        position="0.2 0.5 -2"
       ></a-plane>
+
       <a-plane
         id="ra"
         color="#5865C7"
-        width="0.4"
+        width="0.35"
         height="1.8"
-        position="1 0.5 -2"
+        position="0.6 0.5 -2"
       ></a-plane>
+
       <a-plane
         id="si"
         color="#9B59B6"
-        width="0.4"
+        width="0.35"
         height="1.8"
-        position="1.5 0.5 -2"
+        position="1 0.5 -2"
       ></a-plane>
+
+      <a-plane
+        id="do2"
+        color="#E74C3C"
+        width="0.35"
+        height="1.8"
+        position="1.4 0.5 -2"
+      ></a-plane>
+
       <a-camera position="0 0 0"></a-camera>
     </a-scene>
 
@@ -75,6 +90,7 @@
         document.getElementById("so"),
         document.getElementById("ra"),
         document.getElementById("si"),
+        document.getElementById("do2"),
       ];
 
       const sounds = [
@@ -85,9 +101,10 @@
         new Audio("1-5so.mp3"),
         new Audio("1-6ra.mp3"),
         new Audio("1_7si.mp3"),
+        new Audio("1-8do.mp3"),
       ];
 
-      let wasInside = [false, false, false, false, false, false, false];
+      let wasInside = [false, false, false, false, false, false, false, false];
 
       function playPiano() {
         const hands = scene.components.hands;
@@ -99,7 +116,9 @@
 
           if (inside && !wasInside[i]) {
             sounds[i].currentTime = 0;
-            sounds[i].play();
+            sounds[i].play().catch((error) => {
+              console.log("Audio playback error:", error);
+            });
           }
 
           wasInside[i] = inside;
