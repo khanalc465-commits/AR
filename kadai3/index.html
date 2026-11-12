@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AR Face Filters</title>
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-aframe.prod.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+      background: transparent;
+    }
+
+    a-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      background: transparent !important;
+    }
+
+    a-scene canvas {
+      background: transparent !important;
+    }
+
+    .filters {
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      right: 0;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 12px;
+    }
+
+    .filters button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 15px;
+      color: #fff;
+      background: #333;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .filters button[aria-pressed="true"] {
+      background: #1769ff;
+    }
+
+    .filters button:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
+
+    #status {
+      position: fixed;
+      z-index: 10;
+      top: max(12px, env(safe-area-inset-top));
+      left: 12px;
+      right: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #fff;
+      background: rgb(0 0 0 / 65%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #status[hidden] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="status" role="status">Loading filters...</div>
+
+  <div class="filters" aria-label="Choose a filter pair">
+    <button type="button" data-filter="pair1" aria-pressed="false" disabled>
+      😎 Cool Dude
+    </button>
+    <button type="button" data-filter="pair2" aria-pressed="false" disabled>
+      🥸 Gentleman
+    </button>
+    <button type="button" data-filter="mask" aria-pressed="false" disabled>
+      🎭MaskMan
+    </button>
+  </div>
+
+  <a-scene
+    mindar-face
+    embedded
+    color-space="sRGB"
+    renderer="alpha: true; colorManagement: true; physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets timeout="20000">
+      <a-asset-item id="glasses1Asset" src="./megane1.glb"></a-asset-item>
+      <a-asset-item id="glasses2Asset" src="./megane2.glb"></a-asset-item>
+      <a-asset-item id="moustache1Asset" src="./moustache1.glb"></a-asset-item>
+      <a-asset-item id="moustache2Asset" src="./moustache2.glb"></a-asset-item>
+      <a-asset-item id="maskAsset" src="./mask.glb"></a-asset-item>
+      <a-asset-item id="earsAsset" src="./ears.glb"></a-asset-item>
+    </a-assets>
+
+    <a-camera active="false" position="0 0 0"></a-camera>
+
+    <!-- Glasses are attached to MindAR face anchor 168. -->
+    <a-entity mindar-face-target="anchorIndex: 168">
+      <a-gltf-model
+        id="glasses1"
+        src="#glasses1Asset"
+        position="0 0 0"
+        rotation="0 180 0"
+        scale="0.60 0.60 0.60"
+        visible="false">
+      </a-gltf-model>
+
+      <a-gltf-model
+        id="glasses2"
+        src="#glasses2Asset"
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="0.55 0.55 0.55"
+        visible="false">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Mustaches are attached to MindAR upper-lip face anchor 13. -->
+    <a-entity mindar-face-target="anchorIndex: 13">
+      <a-gltf-model
+        id="moustache1"
+        src="#moustache1Asset"
+        position="-0.238 -0.655 0.001"
+        rotation="90 0 0"
+        scale="0.00000018 0.00000016 0.000000125"
+        visible="false">
+      </a-gltf-model>
+
+      <a-gltf-model
+        id="moustache2"
+        src="#moustache2Asset"
+        position="0 0.05 0.01"
+        rotation="0 0 0"
+        scale="0.013 0.010 0.001"
+        visible="false">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Mask model, aligned to the center of the face. -->
+    <a-entity mindar-face-target="anchorIndex: 168">
+      <a-gltf-model
+        id="mask"
+        src="#maskAsset"
+        position="0 -0.28 0.03"
+        rotation="0 -90 0"
+        scale="1.15 1.98 1.66"
+        visible="false">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Place the pair of ears at the top of the head. -->
+    <a-entity mindar-face-target="anchorIndex: 10">
+      <a-gltf-model
+        id="earLeft"
+        src="#earsAsset"
+        position="0 0.04 0.01"
+        rotation="0 0 0"
+        scale="0.008 0.008 0.008"
+        visible="false">
+      </a-gltf-model>
+    </a-entity>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const scene = document.querySelector("a-scene");
+      const status = document.querySelector("#status");
+      const buttons = [...document.querySelectorAll("[data-filter]")];
+      const models = [...document.querySelectorAll("a-gltf-model")];
+      const loadedModels = new Set();
+      let failed = false;
+
+      const pairs = {
+        pair1: ["glasses1", "moustache1", "earLeft", "earRight"],
+        pair2: ["glasses2", "moustache2", "earLeft", "earRight"],
+        mask: ["mask"]
+      };
+
+      function setStatus(message) {
+        status.textContent = message;
+        status.hidden = !message;
+      }
+
+      function updateReadyState() {
+        if (failed) return;
+
+        if (loadedModels.size === models.length) {
+          buttons.forEach((button) => {
+            button.disabled = false;
+          });
+          setStatus("Camera ready. Choose a filter pair.");
+        }
+      }
+
+      models.forEach((model) => {
+        model.addEventListener("model-loaded", () => {
+          loadedModels.add(model);
+          updateReadyState();
+        });
+
+        model.addEventListener("model-error", () => {
+          failed = true;
+          buttons.forEach((button) => {
+            button.disabled = true;
+          });
+          setStatus(
+            `Could not load ${model.id}. Check that its GLB file is beside index.html.`
+          );
+        });
+      });
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const visibleIds = pairs[button.dataset.filter];
+
+          models.forEach((model) => {
+            model.setAttribute("visible", visibleIds.includes(model.id));
+          });
+
+          buttons.forEach((item) => {
+            item.setAttribute(
+              "aria-pressed",
+              item === button ? "true" : "false"
+            );
+          });
+        });
+      });
+
+      scene.addEventListener("arReady", () => {
+        if (!failed) {
+          setStatus("Camera ready. Look toward the camera.");
+        }
+      });
+
+      scene.addEventListener("arError", () => {
+        setStatus(
+          "Camera could not start. Allow camera access and open this page on localhost or HTTPS."
+        );
+      });
+
+      scene.addEventListener("targetFound", () => {
+        if (!failed && loadedModels.size === models.length) {
+          setStatus("");
+        }
+      });
+
+      scene.addEventListener("targetLost", () => {
+        if (!failed && loadedModels.size === models.length) {
+          setStatus("No face detected. Look toward the camera.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
