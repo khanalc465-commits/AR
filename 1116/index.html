@@ -9,8 +9,28 @@
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/projapayuri/aframe-vr-kit@v0.2.0/vr-kit.js"></script>
  </head>
+  <style>
+    #hub{
+      position:fixed;
+      top:10px;
+      left:10px;
+      z-index:999;
+      padding:12px;
+    }
+    selweect{
+      font-size:18px;
+      padding:4px 8px;
+      width:200px;
+    }
+  </style>
 
   <body>
+    <div id="hub">
+      <select name="" id="avatarChoice">
+        <option value="robot.glb">Robot</option>
+        <option value="wolf.glb">wolf</option>
+      </select>
+    </div>
     <a-scene>
       <a-sky color="lightblue"></a-sky>
       <a-plane>
@@ -36,6 +56,23 @@
         ></a-entity>
       <a-box color="gold" position="0 2 -5"></a-box>
     </a-scene>
+    <script>
+      const avatar = document.getElementById("avatar");
+      const avatarChoice = document.getElementById("avatarChoice");
+
+      function changeAvatar(){
+        if (avatareChoice.value==="wolf.glb") {
+          aavtar.setattriute("glft-model"),avatarChoice.value);
+          aavtar.setattriute("acale","0.5 0.5 0.5");
+          avatar.setAttribute(
+            "avatar-motion",{
+              walk:"gallop",
+              idle:"idle"
+            }
+          )
+        }
+      }
+    </script>
   </body>
 </html>
  
