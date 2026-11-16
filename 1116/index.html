@@ -49,12 +49,12 @@
     <a-entity
       id="avatar"
       gltf-model="robot.glb"
-      position="0 0 -3"
+      position="0 0 -5"
       scale="0.3 0.3 0.3"
       avatar="
         view: third;
         avatarDirection: 180;
-        walk: Robot_walking;
+        walk: Robot_Walking;
         idle: Robot_wave;
         cameraOffset: 0 1.3 1;
       ">
@@ -73,7 +73,7 @@
       if (avatarChoice.value === "wolf.glb") {
 
         avatar.setAttribute("gltf-model", "wolf.glb");
-        avatar.setAttribute("position", "0 0 -8");
+        avatar.setAttribute("position", "0 0 -5");
         avatar.setAttribute("scale", "0.5 0.5 0.5");
 
         avatar.setAttribute("avatar-motion", {
@@ -86,7 +86,7 @@
       if (avatarChoice.value === "robot.glb") {
 
         avatar.setAttribute("gltf-model", "robot.glb");
-         avatar.setAttribute("position", "0 0 -8");
+         avatar.setAttribute("position", "0 0 -5");
         avatar.setAttribute("scale", "0.3 0.3 0.3");
 
         avatar.setAttribute("avatar-motion", {
