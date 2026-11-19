@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>マップ散策・アイテム収集ゲーム</title>
+
+    <link rel="icon" href="data:," />
+
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/projapayuri/aframe-vr-kit@v0.3.0/vr-kit.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+      }
+
+      #hud {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 999;
+
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+      }
+
+      select {
+        font-size: 16px;
+        padding: 5px;
+        width: 150px;
+      }
+
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-align: center;
+        padding: 8px 0;
+        font-size: 12px;
+      }
+
+      footer a {
+        color: lightblue;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ゲーム画面 -->
+    <div id="hud">
+      <p>キャラクター選択</p>
+
+      <select id="avatarChoice">
+        <option value="robot.glb">ロボット</option>
+        <option value="wolf.glb">狼</option>
+      </select>
+
+      <p id="countText">アイテム：0 / 3</p>
+      <p id="resultText"></p>
+    </div>
+    <footer>
+      <a href="https://poly.pizza/m//a1HnTCHfE34" target="_blank"> Desert </a>
+      by Poly by Google [
+      <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">
+        CC BY 3.0
+      </a>
+      ] via Poly Pizza
+    </footer>
+
+    <a-scene>
+    
+      <a-sky color="lightblue"></a-sky>
+
+      
+
+      <a-entity
+        id="map"
+        gltf-model="sabaku.glb"
+        position="0 0 0"
+        scale="0.3 0.3 0.3"
+        walkable
+      >
+      </a-entity>
+
+      <a-entity
+        id="avatar"
+        gltf-model="robot.glb"
+        position="0 0 -3"
+        scale="0.3 0.3 0.3"
+        avatar="
+        view:third;
+        avatarDirection:180;
+        walk:Robot_Walking;
+        idle:Robot_Wave;
+        cameraFollow:false;
+        moveSpeed:1;
+      "
+      >
+      </a-entity>
+      <a-box id="box1" color="gold" position="0 1 -7" solid> </a-box>
+
+      <a-box id="box2" color="gold" position="-5 1 -8" solid> </a-box>
+
+      <a-box id="box3" color="gold" position="5 1 -10" solid> </a-box>
+    </a-scene>
+
+    <script>
+      const avatar = document.getElementById("avatar");
+      const avatarChoice = document.getElementById("avatarChoice");
+
+      const box1 = document.getElementById("box1");
+      const box2 = document.getElementById("box2");
+      const box3 = document.getElementById("box3");
+
+      const countText = document.getElementById("countText");
+      const resultText = document.getElementById("resultText");
+
+      const getsound = new Audio("getBox.mp3");
+      const clearsound = new Audio("clear.mp3");
+
+      let count = 0;
+
+      let box1Aru = true;
+      let box2Aru = true;
+      let box3Aru = true;
+
+      let gameCleared = false;
+
+      function changeAvatar() {
+        if (avatarChoice.value === "wolf.glb") {
+          avatar.setAttribute("gltf-model", "wolf.glb");
+
+          avatar.setAttribute("scale", "0.5 0.5 0.5");
+
+          avatar.setAttribute("avatar-motion", {
+            walk: "Gallop",
+            idle: "Idle",
+          });
+        }
+
+        if (avatarChoice.value === "robot.glb") {
+          avatar.setAttribute("gltf-model", "robot.glb");
+
+          avatar.setAttribute("scale", "0.3 0.3 0.3");
+
+          avatar.setAttribute("avatar-motion", {
+            walk: "Robot_Walking",
+            idle: "Robot_Wave",
+          });
+        }
+      }
+
+      avatarChoice.addEventListener("change", changeAvatar);
+
+      function CheckBox() {
+        if (gameCleared) return;
+        if (box1Aru === true && isNear(avatar, box1, 3.5)) {
+          box1Aru = false;
+
+          box1.setAttribute("visible", false);
+
+          count++;
+
+          getsound.currentTime = 0;
+          getsound.play().catch(() => {});
+        }
+
+        if (box2Aru === true && isNear(avatar, box2, 3.5)) {
+          box2Aru = false;
+
+          box2.setAttribute("visible", false);
+
+          count++;
+
+          getsound.currentTime = 0;
+          getsound.play().catch(() => {});
+        }
+
+        // アイテム3
+        if (box3Aru === true && isNear(avatar, box3, 3.5)) {
+          box3Aru = false;
+
+          box3.setAttribute("visible", false);
+
+          count++;
+
+          getsound.currentTime = 0;
+          getsound.play().catch(() => {});
+        }
+
+        // 取得数の表示
+        countText.textContent = "アイテム：" + count + " / 3";
+
+        if (count === 3) {
+          gameCleared = true;
+
+          resultText.textContent = "ゲームクリア！おめでとう！";
+
+          clearsound.currentTime = 0;
+          clearsound.play().catch(() => {});
+        }
+      }
+      setInterval(CheckBox, 100);
+    </script>
+  </body>
+</html>
